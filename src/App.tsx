@@ -1,26 +1,83 @@
-/* eslint-disable max-len */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import * as todoService from './api/todoService';
+import { Todo } from './types/Todo';
+import { TodoList } from './components/TodoList';
+import { TodoFooter } from './components/TodoFooter';
+import { ErrorNotification } from './components/ErrorNotification';
+import { Status } from './types/Status';
+import { ErrorMessage } from './types/ErorrMessage';
+import { TodoHeader } from './components/TodoHeader';
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage | ''>('');
+  const [status, setStatus] = useState<Status>(Status.ALL);
+
+  useEffect(() => {
+    async function loadTodos() {
+      try {
+        const newTodos = await todoService.getTodos();
+
+        setTodos(newTodos);
+      } catch (error) {
+        setErrorMessage(ErrorMessage.LOAD);
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+        throw error;
+      }
+    }
+
+    loadTodos();
+  }, []);
+
+  async function deleteTodo(todoId: number) {
+    try {
+      todoService.deleteTodo(todoId);
+    }
+};
+
+  const filtredTodos = useMemo(() => {
+    let list = todos;
+
+    if (status === 'Active') {
+      list = list.filter(todo => !todo.completed);
+    } else if (status === 'Completed') {
+      list = list.filter(todo => todo.completed);
+    }
+
+    return list;
+  }, [status, todos]);
+
+  if (!todoService.USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <TodoHeader todos={todos} />
+
+        <TodoList todos={filtredTodos} />
+
+        {!!todos.length && (
+          <TodoFooter
+            todos={todos}
+            status={status}
+            onStatusChange={setStatus}
+          />
+        )}
+      </div>
+
+      <ErrorNotification
+        errorMessage={errorMessage}
+        onClearMessage={() => setErrorMessage('')}
+      />
+    </div>
   );
 };
