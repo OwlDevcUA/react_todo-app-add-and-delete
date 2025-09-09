@@ -3,15 +3,17 @@
 import classNames from 'classnames';
 import React, { useState } from 'react';
 import { Todo } from '../types/Todo';
-import { deleteTodo } from '../api/todoService';
 
 type Props = {
   todo: Todo;
+  isLoading: boolean;
+  loadingTodoId: number[];
+  onDelete?: (todoId: number) => void;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo }) => {
+export const TodoItem: React.FC<Props> = ({ todo, isLoading, loadingTodoId, onDelete  }) => {
   const [editTodoId, setEditTodoId] = useState(0);
-  const [editTitle, setEditTitle] = useState('');
+  const [editTitle, setEditTitle] = useState(todo.title);
 
   const handleEdit = (todoId: number) => {
     setEditTodoId(todoId);
@@ -28,7 +30,6 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          onBlur={() => setEditTodoId(0)}
           autoFocus
         />
       </label>
@@ -42,6 +43,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
             placeholder="Empty todo will be deleted"
             value={editTitle}
             onChange={e => setEditTitle(e.target.value)}
+            onBlur={() => setEditTodoId(0)}
           />
         </form>
       ) : (
@@ -58,7 +60,11 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-            onClick={() => deleteTodo(todo.id)}
+              onClick={() => {
+                if (onDelete) {
+                onDelete(todo.id)
+              }
+            }}
           >
             ×
           </button>
@@ -66,7 +72,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       )}
 
       {/* overlay will cover the todo while it is being deleted or updated */}
-      <div data-cy="TodoLoader" className={classNames('modal overlay')}>
+      <div data-cy="TodoLoader" className={classNames('modal overlay', {'is-active': isLoading && loadingTodoId.includes(todo.id)})}>
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

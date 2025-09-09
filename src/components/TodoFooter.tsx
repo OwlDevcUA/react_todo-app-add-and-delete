@@ -2,19 +2,22 @@ import classNames from 'classnames';
 import React from 'react';
 import { Todo } from '../types/Todo';
 import { Status } from '../types/Status';
+import { getCompletedTodos } from '../services/todoUtils';
 
 type Props = {
   todos: Todo[];
   status: Status;
   onStatusChange: (status: Status) => void;
+  onClearCompleted: (isPressed: boolean) => void;
 };
 
 export const TodoFooter: React.FC<Props> = ({
   todos,
   status,
   onStatusChange,
+  onClearCompleted,
 }) => {
-  const completedTodos = todos.filter(todo => todo.completed);
+  const completedTodos = getCompletedTodos(todos);
   const activeTodos = todos.filter(todo => !todo.completed);
 
   const handleStatusChange = (
@@ -69,6 +72,7 @@ export const TodoFooter: React.FC<Props> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={!completedTodos.length}
+        onClick={() => onClearCompleted(true)}
       >
         Clear completed
       </button>
