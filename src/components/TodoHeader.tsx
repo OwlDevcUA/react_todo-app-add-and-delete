@@ -1,18 +1,56 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
 import classNames from 'classnames';
+import { USER_ID } from '../api/todoApi';
+import { ErrorMessage } from '../types/ErorrMessage';
 
 type Props = {
   todos: Todo[];
+  loading: boolean;
+  isError?: boolean;
+  onAdd: ({ title, userId, completed }: Omit<Todo, 'id'>) => void;
+  onError: (errorMessage: ErrorMessage | '') => void;
 };
 
-export const TodoHeader: React.FC<Props> = ({ todos }) => {
+export const TodoHeader: React.FC<Props> = ({
+  todos,
+  loading,
+  isError,
+  onAdd,
+  onError,
+}) => {
+  const [value, setValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const isAllCopleted = todos.every(todo => todo.completed);
 
   useEffect(() => {
     inputRef.current?.focus();
   }, [todos]);
+
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (value.trim() === '') {
+      onError(ErrorMessage.TITLE);
+      setTimeout(() => {
+        onError('');
+      }, 3000);
+
+      return;
+    }
+
+    if (isError) {
+      return;
+    } else {
+      onAdd({
+        title: value.trim(),
+        userId: Number(USER_ID),
+        completed: false,
+      });
+
+      setValue('');
+    }
+  };
 
   return (
     <header className="todoapp__header">
@@ -23,13 +61,16 @@ export const TodoHeader: React.FC<Props> = ({ todos }) => {
       />
 
       {/* Add a todo on form submit */}
-      <form>
+      <form onSubmit={onSubmit}>
         <input
           ref={inputRef}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          disabled={loading}
+          value={value}
+          onChange={e => setValue(e.target.value)}
         />
       </form>
     </header>

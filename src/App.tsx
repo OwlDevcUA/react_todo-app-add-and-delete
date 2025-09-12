@@ -11,7 +11,6 @@ import { Status } from './types/Status';
 import { ErrorMessage } from './types/ErorrMessage';
 import { TodoHeader } from './components/TodoHeader';
 import { getCompletedTodos } from './services/todoUtils';
-import { NewTodo } from './types/NewTodo';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -19,6 +18,7 @@ export const App: React.FC = () => {
   const [status, setStatus] = useState<Status>(Status.ALL);
 
   const [errorMessage, setErrorMessage] = useState<ErrorMessage | ''>('');
+  const isError = Boolean(errorMessage);
 
   const [loading, setLoading] = useState(false);
   const [loadingTodoId, setLoadingTodoId] = useState<number[]>([]);
@@ -59,7 +59,7 @@ export const App: React.FC = () => {
     }
   }
 
-  async function addTodo({ title, userId, completed }: NewTodo) {
+  async function addTodo({ title, userId, completed }: Omit<Todo, 'id'>) {
     const temp: Todo = { id: 0, title, userId, completed };
 
     setTempTodo(temp);
@@ -74,8 +74,8 @@ export const App: React.FC = () => {
       });
 
       setTodos(currentTodos => [...currentTodos, newTodo]);
-      setTempTodo(null);
     } catch (error) {
+      setTempTodo(null);
       setErrorMessage(ErrorMessage.ADD);
       setTimeout(() => {
         setErrorMessage('');
@@ -84,6 +84,7 @@ export const App: React.FC = () => {
     } finally {
       setLoading(false);
       setLoadingTodoId([]);
+      setTempTodo(null);
     }
   }
 
@@ -118,12 +119,19 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <TodoHeader todos={todos} />
+        <TodoHeader
+          todos={todos}
+          loading={loading}
+          isError={isError}
+          onAdd={addTodo}
+          onError={setErrorMessage}
+        />
 
         <TodoList
           todos={filtredTodos}
           isLoading={loading}
           loadingTodoId={loadingTodoId}
+          tempTodo={tempTodo}
           onDelete={deleteTodo}
         />
 
