@@ -75,11 +75,11 @@ export const App: React.FC = () => {
 
       setTodos(currentTodos => [...currentTodos, newTodo]);
     } catch (error) {
-      setTempTodo(null);
       setErrorMessage(ErrorMessage.ADD);
       setTimeout(() => {
         setErrorMessage('');
       }, 3000);
+      setTempTodo(null);
       throw error;
     } finally {
       setLoading(false);

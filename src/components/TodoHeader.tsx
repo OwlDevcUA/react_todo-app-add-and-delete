@@ -27,28 +27,30 @@ export const TodoHeader: React.FC<Props> = ({
     inputRef.current?.focus();
   }, [todos]);
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (value.trim() === '') {
       onError(ErrorMessage.TITLE);
-      setTimeout(() => {
-        onError('');
-      }, 3000);
+      setTimeout(() => onError(''), 3000);
 
       return;
     }
 
     if (isError) {
       return;
-    } else {
-      onAdd({
+    }
+
+    try {
+      await onAdd({
         title: value.trim(),
         userId: Number(USER_ID),
         completed: false,
       });
 
       setValue('');
+    } catch (error) {
+      throw error;
     }
   };
 
