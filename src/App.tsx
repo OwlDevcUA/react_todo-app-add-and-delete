@@ -31,9 +31,6 @@ export const App: React.FC = () => {
         setTodos(newTodos);
       } catch (error) {
         setErrorMessage(ErrorMessage.LOAD);
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
         throw error;
       }
     }
@@ -49,9 +46,6 @@ export const App: React.FC = () => {
       setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
     } catch (error) {
       setErrorMessage(ErrorMessage.DELETE);
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 3000);
       throw error;
     } finally {
       setLoading(false);
@@ -76,9 +70,6 @@ export const App: React.FC = () => {
       setTodos(currentTodos => [...currentTodos, newTodo]);
     } catch (error) {
       setErrorMessage(ErrorMessage.ADD);
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 3000);
       setTempTodo(null);
       throw error;
     } finally {

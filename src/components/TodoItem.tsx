@@ -11,7 +11,12 @@ type Props = {
   onDelete?: (todoId: number) => void;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, isLoading, loadingTodoId, onDelete  }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  isLoading,
+  loadingTodoId,
+  onDelete,
+}) => {
   const [editTodoId, setEditTodoId] = useState(0);
   const [editTitle, setEditTitle] = useState(todo.title);
 
@@ -60,9 +65,9 @@ export const TodoItem: React.FC<Props> = ({ todo, isLoading, loadingTodoId, onDe
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-              onClick={() => {
-                if (onDelete) {
-                onDelete(todo.id)
+            onClick={() => {
+              if (onDelete) {
+                onDelete(todo.id);
               }
             }}
           >
@@ -72,7 +77,12 @@ export const TodoItem: React.FC<Props> = ({ todo, isLoading, loadingTodoId, onDe
       )}
 
       {/* overlay will cover the todo while it is being deleted or updated */}
-      <div data-cy="TodoLoader" className={classNames('modal overlay', {'is-active': isLoading && loadingTodoId.includes(todo.id)})}>
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active': isLoading && loadingTodoId.includes(todo.id),
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

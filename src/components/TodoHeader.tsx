@@ -25,19 +25,16 @@ export const TodoHeader: React.FC<Props> = ({
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, [todos]);
+  }, [todos, isError]);
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    onError('');
 
     if (value.trim() === '') {
       onError(ErrorMessage.TITLE);
       setTimeout(() => onError(''), 3000);
 
-      return;
-    }
-
-    if (isError) {
       return;
     }
 
