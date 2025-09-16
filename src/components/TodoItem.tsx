@@ -17,7 +17,7 @@ export const TodoItem: React.FC<Props> = ({
   loadingTodoId,
   onDelete,
 }) => {
-  const [editTodoId, setEditTodoId] = useState(0);
+  const [editTodoId, setEditTodoId] = useState<number | null>();
   const [editTitle, setEditTitle] = useState(todo.title);
 
   const handleEdit = (todoId: number) => {
@@ -48,7 +48,7 @@ export const TodoItem: React.FC<Props> = ({
             placeholder="Empty todo will be deleted"
             value={editTitle}
             onChange={e => setEditTitle(e.target.value)}
-            onBlur={() => setEditTodoId(0)}
+            onBlur={() => setEditTodoId(null)}
           />
         </form>
       ) : (
